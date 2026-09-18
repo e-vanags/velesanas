@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vērtību telpa: kur tu esi starp Saeimas deputātiem</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EAEBE7; --card:#FFFFFF; --ink:#16181B; --muted:#5B616A; --faint:#8A9099;
+  --line:#DEE0DC; --plot:#FBFBF9; --grid:#E7E9E5; --pill:#F1F2EF;
+  --shadow:0 1px 2px rgba(22,24,27,.05),0 10px 30px rgba(22,24,27,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0D0F12; --card:#15181D; --ink:#ECEEF1; --muted:#98A0AA; --faint:#6B727C;
+  --line:#232830; --plot:#11151A; --grid:#1E232B; --pill:#1B1F25;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 34px rgba(0,0,0,.4);
+}}
+:root[data-theme="dark"]{
+  --paper:#0D0F12; --card:#15181D; --ink:#ECEEF1; --muted:#98A0AA; --faint:#6B727C;
+  --line:#232830; --plot:#11151A; --grid:#1E232B; --pill:#1B1F25;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 12px 34px rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:88px}
+.wrap{max-width:760px;margin:0 auto;padding:36px 18px 40px}
+
+/* Masthead */
+.kicker{font-size:13px;color:var(--muted);margin:0 0 12px;line-height:1.45}
+h1{font-family:"IBM Plex Serif",Georgia,serif;font-weight:600;
+  font-size:clamp(28px,6.2vw,42px);line-height:1.08;letter-spacing:-.01em;margin:0 0 14px}
+.lede{font-size:16.5px;color:var(--muted);margin:0 0 22px;max-width:60ch}
+.privacy{font-size:13px;color:var(--muted);margin:-12px 0 22px;padding:10px 12px;
+  background:var(--pill);border:1px solid var(--line);border-radius:9px;max-width:60ch}
+.counter{font-size:13.5px;color:var(--ink);font-weight:600;margin:-10px 0 24px;font-variant-numeric:tabular-nums}
+
+/* Stat strip */
+.stats{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--ink);border-bottom:1px solid var(--line);
+  margin:0 0 14px}
+.stat{flex:1 1 25%;min-width:90px;padding:12px 14px 12px 0}
+.stat + .stat{padding-left:14px;border-left:1px solid var(--line)}
+.stat .v{font-family:"IBM Plex Serif",serif;font-size:24px;font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.stat .k{font-size:12px;color:var(--muted);margin-top:5px}
+.statnote{font-size:13.5px;color:var(--muted);margin:0 0 30px;line-height:1.55}
+.statnote b{color:var(--ink);font-weight:600}
+
+/* Questionnaire */
+.sectlead{font-family:"IBM Plex Serif",serif;font-size:15px;font-weight:600;color:var(--muted);
+  margin:0 0 12px}
+.qset{background:var(--card);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);overflow:hidden}
+.q{padding:18px 18px 16px;border-top:1px solid var(--line)}
+.q:first-child{border-top:none}
+.q .head{display:flex;gap:10px;align-items:baseline;margin-bottom:12px}
+.q .num{font-family:"IBM Plex Serif",serif;font-weight:600;font-size:15px;color:var(--faint);
+  min-width:22px;font-variant-numeric:tabular-nums}
+.q .txt{font-size:15px;line-height:1.4}
+.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.scale button{font-family:inherit;font-size:12px;line-height:1.18;color:var(--muted);
+  background:var(--pill);border:1px solid transparent;border-radius:9px;padding:10px 3px;cursor:pointer;
+  min-height:52px;transition:background .12s,color .12s,box-shadow .12s}
+.scale button:hover{color:var(--ink);box-shadow:inset 0 0 0 1px var(--line)}
+.scale button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.scale button[aria-pressed="true"]{background:var(--ink);color:var(--card);font-weight:600}
+
+/* Fixed action bar */
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--card);
+  border-top:1px solid var(--line);box-shadow:0 -6px 24px rgba(22,24,27,.07)}
+.bar .inner{max-width:760px;margin:0 auto;padding:12px 18px;display:flex;align-items:center;gap:14px}
+.track{flex:1;height:6px;border-radius:4px;background:var(--pill);overflow:hidden}
+.track > i{display:block;height:100%;width:0;background:var(--ink);border-radius:4px;transition:width .25s}
+.count{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.cta{font-family:inherit;font-size:15px;font-weight:600;color:var(--card);background:var(--ink);
+  border:none;border-radius:10px;padding:12px 18px;cursor:pointer;white-space:nowrap}
+.cta:disabled{opacity:.4;cursor:not-allowed}
+.cta:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+@media (max-width:560px){.bar .inner{flex-wrap:wrap}.count{order:3;width:100%;text-align:center}}
+
+/* Results */
+#out{margin-top:30px}
+.verdict{border-top:2px solid var(--ink);padding-top:16px;margin-bottom:22px}
+.verdict .lab{font-size:13px;color:var(--muted);margin:0 0 4px}
+.verdict .big{font-family:"IBM Plex Serif",serif;font-size:clamp(26px,7vw,38px);font-weight:600;margin:0;line-height:1.05}
+.verdict .big em{font-style:normal;padding:0 2px;border-radius:4px}
+.maptitle{font-family:"IBM Plex Serif",serif;font-size:18px;font-weight:600;margin:0 0 4px}
+.mapsub{font-size:13px;color:var(--muted);margin:0 0 12px}
+.plotwrap{position:relative}
+svg.chart{width:100%;height:auto;display:block;background:var(--plot);border:1px solid var(--line);border-radius:10px}
+.tooltip{position:absolute;pointer-events:none;background:var(--ink);color:var(--card);font-size:12px;
+  padding:6px 9px;border-radius:7px;opacity:0;transform:translate(-50%,-140%);transition:opacity .1s;white-space:nowrap;z-index:5}
+.legend{display:flex;flex-wrap:wrap;gap:9px 14px;margin:12px 2px 0;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.axes{margin:16px 0 2px;font-size:13px;color:var(--muted);line-height:1.6}
+.axes p{margin:0 0 8px}.axes p:last-child{margin-bottom:0}
+.axes b{color:var(--ink);font-weight:600}
+h2.rh{font-family:"IBM Plex Serif",serif;font-size:17px;font-weight:600;margin:30px 0 12px}
+.rrow{display:grid;grid-template-columns:120px 1fr 46px;gap:10px;align-items:center;margin:8px 0;font-size:14px}
+.rrow .fn{display:flex;align-items:center;gap:7px}
+.rrow.top .fn{font-weight:600}
+.rbar{height:8px;border-radius:5px;background:var(--pill);overflow:hidden}
+.rbar > i{display:block;height:100%;border-radius:5px}
+.rrow .d{color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px;text-align:right}
+.nrow{display:flex;align-items:center;gap:9px;padding:9px 0;border-top:1px solid var(--line);font-size:14px}
+.nrow:first-of-type{border-top:none}
+.nrow .nm{font-weight:500}.nrow .fx{color:var(--muted);font-size:12.5px}
+.nrow .nd{margin-left:auto;color:var(--muted);font-size:12.5px;font-variant-numeric:tabular-nums}
+.method{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);line-height:1.65}
+.method b{color:var(--ink);font-weight:600}
+.hide{display:none}
+.reveal{animation:rise .45s cubic-bezier(.2,.7,.2,1) both}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.reveal{animation:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <p class="kicker">Interaktīvais rīks veidots sadarbībā ar raidījumu “Aizliegtais paņēmiens”. Aptauja deputātiem administrēta 2025. gada nogalē.</p>
+  <h1>Kur tu esi vērtību telpā starp Saeimas deputātiem?</h1>
+  <p class="lede">Atbildi uz tiem pašiem 10 jautājumiem, ko uzdeva 14. Saeimas deputātiem. Kad būsi pabeidzis, redzēsi savu vietu deputātu atbilžu kartē, kurai frakcijai esi vistuvāk un kuru deputātu atbildes ir vislīdzīgākās Tavējām.</p>
+  <p class="privacy">Rīks nevāc personas datus. Tavas atbildes paliek tikai Tavā pārlūkā un netiek nekur nosūtītas. Rīks tikai saskaita anketas respondentu skaitu.</p>
+  <p class="counter" id="counter" hidden></p>
+
+  <div class="stats" id="stats"></div>
+  <p class="statnote" id="statnote"></p>
+
+  <p class="sectlead">Anketa</p>
+  <div class="qset" id="qset"></div>
+
+  <section id="out" class="hide" aria-live="polite">
+    <div class="verdict">
+      <p class="lab">Tavai atbildei vistuvākā frakcija</p>
+      <p class="big"><em id="topFaction">–</em></p>
+    </div>
+    <p class="maptitle">Vērtību karte</p>
+    <p class="mapsub">Katrs punkts ir viens deputāts, rombi ir frakciju vidējās pozīcijas, un aplis ar krustu esi Tu.</p>
+    <div class="plotwrap">
+      <svg class="chart" id="chart" viewBox="0 0 700 500" role="img" aria-label="Deputātu vērtību karte ar tavu pozīciju"></svg>
+      <div class="tooltip" id="tip"></div>
+    </div>
+    <div class="legend" id="legend"></div>
+
+    <div class="axes">
+      <p><b>Horizontālā ass (1. dimensija, 55%)</b> ir galvenā uzskatu atšķirība. To veido attieksme pret LGBT tiesībām un dzimumu lomām: labajā, liberālākajā pusē ir deputāti, kas atbalsta viendzimuma laulības un adopciju, viendzimuma satura rādīšanu LTV un sieviešu iesaukšanu dienestā, kreisajā, konservatīvākajā pusē, tie, kas iestājas par tradicionālākām lomām.</p>
+      <p><b>Vertikālā ass (2. dimensija, 13%)</b> ir otra lielākā atšķirība, kas ar pirmo nav saistīta. To gandrīz pilnībā nosaka attieksme pret komplimentu darba kolēģei (8. jautājums): augšā (pieļaujošāk) ir deputāti, kas to uzskata par pieņemamu, apakšā (atturīgāk) tie, kas pret šādu izturēšanos ir noraidoši, ar nelielu papildu ietekmi no jautājuma par laulību (1. jautājums). Tā kā šī ass balstās gandrīz tikai uz vienu jautājumu, tās nozīme ir daudz vājāka nekā horizontālajai, un poli jāinterpretē piesardzīgi.</p>
+    </div>
+
+    <h2 class="rh">Frakcijas no tuvākās līdz tālākajai</h2>
+    <div id="rankRows"></div>
+
+    <h2 class="rh">Deputāti ar vislīdzīgākajām atbildēm</h2>
+    <div id="nearRows"></div>
+
+    <p class="method">
+      <b>Kā tas rēķināts.</b> Katra atbilde kodēta skalā no 1 (Nē) līdz 5 (Jā), “Man vienalga” = 3. Deputātu neatbildētie jautājumi aizpildīti ar attiecīgās frakcijas mediānu. Karte ir galveno komponentu analīze (PCA) no 10 atbildēm: 1. dimensija izskaidro 54.9% dispersijas, 2. dimensija 13.0%. Ass “konservatīvāk / liberālāk” ir 1. dimensijas interpretācija. Tuvība frakcijai un deputātiem mērīta kā Eiklīda attālums pilnajā 10 jautājumu telpā. Cieši sagrupētie punkti kartē ir nedaudz atbīdīti, lai tie nepārklātos, tāpēc deputāta punkts var būt dažus pikseļus nobīdīts no precīzās pozīcijas. Šis ir izpētes un izglītojošs rīks, deputātu atbildes ir no publiskā raidījuma. Tavas atbildes un aprēķini paliek Tavā pārlūkā un netiek nosūtīti; rīks tikai anonīmi saskaita anketas respondentu skaitu.
+    </p>
+  </section>
+</main>
+
+<div class="bar">
+  <div class="inner">
+    <div class="track"><i id="track"></i></div>
+    <span class="count" id="count">0 / 10</span>
+    <button class="cta" id="calc" disabled>Rādīt manu rezultātu</button>
+  </div>
+</div>
+
+<!-- Firebase (skaitītājam). Darbojas publicētā lapā, piemēram, GitHub Pages. -->
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+<script>
+const DATA = {"questions": [{"n": 1, "text": "Vai sievietei un vīrietim, kuru kopdzīvē ir dzimis bērns, būtu obligāti jāaprecas?"}, {"n": 2, "text": "Vai vīrietim par ģimenes finansiālo labklājību ir jāuzņemas lielākas rūpes nekā sievietei?"}, {"n": 3, "text": "Vai sievietes būtu obligāti iesaucamas Valsts aizsardzības dienestā tāpat kā vīrieši?"}, {"n": 4, "text": "Vai Latvijai spert nākamo soli, atļaut viendzimuma pāriem oficiāli apprecēties?"}, {"n": 5, "text": "Vai nepilngadīgām personām atļaut sākt bioloģiskā dzimuma maiņas terapiju, ja tam ir vecāku atļauja?"}, {"n": 6, "text": "Vai vientuļā māte ar bērniem ir uzskatāma par ģimeni?"}, {"n": 7, "text": "Vai Latvijas Televīzijai rādīt filmas un raidījumus, kuros ir atainotas viendzimuma attiecības?"}, {"n": 8, "text": "Vai ir pieņemami, ka vīrietis darba kolēģei izsaka komplimentu, \"Cik tev skaistas kājas!\""}, {"n": 9, "text": "Vai homoseksuāliem cilvēkiem atļaut bērnu adoptēšanu?"}, {"n": 10, "text": "Vai ir normāli, ka sieviete nolemj audzināt bērnu viena, ieņemot to mākslīgās apaugļošanas klīnikā?"}], "options": [{"label": "JĀ", "v": 5}, {"label": "DRĪZĀK JĀ", "v": 4}, {"label": "DRĪZĀK NĒ", "v": 2}, {"label": "NĒ", "v": 1}, {"label": "MAN VIENALGA", "v": 3}], "deputies": [{"name": "LINDA LIEPIŅA", "faction": "LPV", "status": "ar komentāriem", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.0, 2.0, 1.0, 5.0], "nMiss": 2, "x": -2.572, "y": -0.523}, {"name": "KRISTAPS KRIŠTOPANS", "faction": "LPV", "status": "pilnībā", "answers": [4.0, 4.0, 2.0, 2.0, 2.0, 5.0, 2.0, 5.0, 2.0, 4.0], "nMiss": 0, "x": -0.995, "y": 1.385}, {"name": "RAMONA PETRAVIČA", "faction": "LPV", "status": "pilnībā", "answers": [1.0, 5.0, 1.0, 1.0, 1.0, 5.0, 4.0, 5.0, 1.0, 4.0], "nMiss": 0, "x": -0.911, "y": 3.584}, {"name": "EDMUNDS ZIVTIŅŠ", "faction": "LPV", "status": "pilnībā", "answers": [5.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 1.0, 2.0, 5.0], "nMiss": 0, "x": -2.76, "y": -1.957}, {"name": "MAIJA ARMAŅEVA", "faction": "LPV", "status": "atteicās", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.0, 2.0, 1.0, 4.0], "nMiss": 10, "x": -2.689, "y": -0.589}, {"name": "MĀRCIS JENCĪTIS", "faction": "LPV", "status": "pilnībā", "answers": [4.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 2.0, 1.0, 1.0], "nMiss": 0, "x": -3.409, "y": -0.768}, {"name": "ILZE STOBOVA", "faction": "LPV", "status": "pilnībā", "answers": [4.0, 3.0, 1.0, 1.0, 1.0, 5.0, 1.0, 1.0, 1.0, 5.0], "nMiss": 0, "x": -2.147, "y": -1.342}, {"name": "RIČARDS ŠLESERS", "faction": "LPV", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 4.0, 1.0, 2.0, 1.0, 4.0], "nMiss": 0, "x": -2.703, "y": -0.587}, {"name": "HARIJS ROKPELNIS", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 5.0, 1.0, 1.0, 1.0, 5.0, 3.0, 1.0, 1.0, 5.0], "nMiss": 0, "x": -2.024, "y": -1.202}, {"name": "AUGUSTS BRIGMANIS", "faction": "ZZS", "status": "atteicās", "answers": [4.0, 4.0, 1.0, 2.0, 1.0, 5.0, 2.0, 3.0, 2.0, 4.5], "nMiss": 10, "x": -1.373, "y": 0.139}, {"name": "ULDIS AUGULIS", "faction": "ZZS", "status": "ar komentāriem", "answers": [4.0, 4.0, 2.0, 2.0, 2.0, 4.0, 2.0, 3.0, 2.0, 4.0], "nMiss": 1, "x": -0.896, "y": -0.212}, {"name": "ANDRIS BĒRZIŅŠ", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 5.0, 1.0, 3.0, 1.0, 5.0, 2.0, 1.0, 2.0, 5.0], "nMiss": 0, "x": -1.151, "y": -1.442}, {"name": "ANITA BRAKOVSKA", "faction": "ZZS", "status": "pilnībā", "answers": [5.0, 1.0, 1.0, 2.0, 1.0, 4.0, 1.0, 4.0, 2.0, 4.0], "nMiss": 0, "x": -1.169, "y": 0.264}, {"name": "GUNDARS DAUDZE", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.0, 4.0, 1.0, 5.0], "nMiss": 0, "x": -2.685, "y": 1.076}, {"name": "JĀNIS DINEVIČS", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 5.0, 1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 2.0, 4.0], "nMiss": 0, "x": -2.244, "y": 0.077}, {"name": "LIGITA GINTERE", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 3.0, 2.0, 5.0, 2.0, 3.0, 3.0, 4.0], "nMiss": 0, "x": -0.301, "y": -0.184}, {"name": "JURIS JAKOVINS", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 5.0, 4.0, 1.0, 1.0, 4.0, 1.0, 4.0, 1.0, 4.5], "nMiss": 1, "x": -2.213, "y": 0.51}, {"name": "LĪGA KĻAVIŅA", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 4.0, 4.0, 2.0, 1.0, 5.0, 2.0, 1.0, 2.0, 4.0], "nMiss": 0, "x": -0.405, "y": -2.047}, {"name": "LĪGA KOZLOVSKA", "faction": "ZZS", "status": "ar komentāriem", "answers": [4.0, 4.0, 1.0, 3.0, 1.0, 5.0, 5.0, 3.0, 4.0, 5.0], "nMiss": 2, "x": 1.326, "y": 0.049}, {"name": "GUNĀRS KŪTRIS", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 3.0, 4.0, 2.0, 2.0], "nMiss": 0, "x": -1.711, "y": 0.859}, {"name": "VALDIS MASLOVSKIS", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 5.0], "nMiss": 0, "x": -2.086, "y": -1.272}, {"name": "DAIGA MIERIŅA", "faction": "ZZS", "status": "ar komentāriem", "answers": [4.0, 2.0, 1.0, 2.0, 1.0, 5.0, 4.0, 4.0, 2.0, 5.0], "nMiss": 1, "x": 0.226, "y": 1.034}, {"name": "JĀNIS VUCĀNS", "faction": "ZZS", "status": "ar komentāriem", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 2.0, 1.0, 5.0, 5.0], "nMiss": 0, "x": -0.221, "y": -1.751}, {"name": "DIDZIS ZEMMERS", "faction": "ZZS", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 4.0], "nMiss": 0, "x": -2.203, "y": -1.338}, {"name": "EDGARS TAVARS", "faction": "AS", "status": "ar komentāriem", "answers": [4.0, 5.0, 1.0, 2.0, 1.0, 5.0, 2.0, 1.0, 1.0, 4.0], "nMiss": 1, "x": -2.153, "y": -1.353}, {"name": "AIVA VĪKSNA", "faction": "AS", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 5.0], "nMiss": 0, "x": -2.086, "y": -1.272}, {"name": "JURIS VIĻUMS", "faction": "AS", "status": "pilnībā", "answers": [4.0, 2.0, 2.0, 1.0, 2.0, 5.0, 2.0, 2.0, 2.0, 5.0], "nMiss": 0, "x": -0.39, "y": -0.951}, {"name": "ČESLAVS BATŅA", "faction": "AS", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.0, 2.0, 1.0, 4.0], "nMiss": 0, "x": -2.689, "y": -0.589}, {"name": "RAIMONDS BERGMANIS", "faction": "AS", "status": "pilnībā", "answers": [5.0, 5.0, 1.0, 1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 5.0], "nMiss": 0, "x": -2.796, "y": -1.787}, {"name": "MĀRIS KUČINSKIS", "faction": "AS", "status": "pilnībā", "answers": [4.0, 4.0, 2.0, 1.0, 1.0, 5.0, 2.0, 4.0, 1.0, 4.0], "nMiss": 0, "x": -2.068, "y": 0.875}, {"name": "ANDRIS KULBERGS", "faction": "AS", "status": "pilnībā", "answers": [4.0, 5.0, 1.0, 5.0, 1.0, 5.0, 3.0, 5.0, 2.0, 4.0], "nMiss": 0, "x": -0.227, "y": 1.67}, {"name": "INGMĀRS LĪDAKA", "faction": "AS", "status": "pilnībā", "answers": [2.0, 4.0, 2.0, 1.0, 2.0, 5.0, 4.0, 1.0, 1.0, 4.0], "nMiss": 0, "x": -0.109, "y": -0.488}, {"name": "LAURIS LIZBOVSKIS", "faction": "AS", "status": "ar komentāriem", "answers": [4.0, 4.0, 2.0, 2.0, 1.0, 5.0, 2.0, 2.0, 2.0, 5.0], "nMiss": 0, "x": -0.953, "y": -0.812}, {"name": "LINDA MATISONE", "faction": "AS", "status": "pilnībā", "answers": [5.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 3.0, 1.0, 5.0], "nMiss": 0, "x": -3.339, "y": -0.239}, {"name": "EDGARS PUTRA", "faction": "AS", "status": "pilnībā", "answers": [4.0, 5.0, 1.0, 1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 4.0], "nMiss": 0, "x": -2.571, "y": -1.318}, {"name": "EDVARDS SMILTĒNS", "faction": "AS", "status": "pilnībā", "answers": [4.0, 5.0, 1.0, 1.0, 1.0, 5.0, 3.0, 1.0, 1.0, 5.0], "nMiss": 0, "x": -2.024, "y": -1.202}, {"name": "ANDREJS SVILĀNS", "faction": "AS", "status": "pilnībā", "answers": [4.0, 4.5, 1.0, 1.0, 1.0, 5.0, 2.0, 1.5, 1.0, 4.5], "nMiss": 10, "x": -2.357, "y": -0.895}, {"name": "RAIVIS DZINTARS", "faction": "NA", "status": "ar komentāriem", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.5, 2.0, 2.0, 5.0], "nMiss": 2, "x": -1.891, "y": -0.617}, {"name": "ILZE INDRIKSONE", "faction": "NA", "status": "ar komentāriem", "answers": [4.0, 1.0, 1.0, 1.0, 1.0, 5.0, 4.0, 2.0, 2.0, 4.0], "nMiss": 0, "x": 0.171, "y": -0.616}, {"name": "ARTŪRS BUTĀNS", "faction": "NA", "status": "ar komentāriem", "answers": [4.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 2.0, 2.0, 2.0], "nMiss": 0, "x": -2.826, "y": -0.821}, {"name": "JĀNIS DOMBRAVA", "faction": "NA", "status": "ar komentāriem", "answers": [4.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 5.0, 1.0, 4.0], "nMiss": 2, "x": -3.227, "y": 1.829}, {"name": "JĀNIS GRASBERGS", "faction": "NA", "status": "pilnībā", "answers": [5.0, 2.0, 1.0, 1.0, 1.0, 5.0, 2.0, 1.0, 1.0, 4.0], "nMiss": 0, "x": -1.809, "y": -1.911}, {"name": "JURĢIS KLOTIŅŠ", "faction": "NA", "status": "ar komentāriem", "answers": [5.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.0, 1.0, 1.0, 1.0], "nMiss": 0, "x": -3.327, "y": -2.121}, {"name": "UĢIS MITREVICS", "faction": "NA", "status": "pilnībā", "answers": [4.0, 5.0, 1.0, 1.0, 1.0, 5.0, 2.0, 2.0, 1.0, 5.0], "nMiss": 0, "x": -2.511, "y": -0.453}, {"name": "INĀRA MŪRNIECE", "faction": "NA", "status": "ar komentāriem", "answers": [4.0, 3.0, 1.0, 1.0, 1.0, 5.0, 4.0, 2.0, 1.0, 5.0], "nMiss": 2, "x": -0.914, "y": -0.391}, {"name": "NAURIS PUNTULIS", "faction": "NA", "status": "ar komentāriem", "answers": [5.0, 1.0, 1.0, 1.0, 1.0, 5.0, 1.5, 2.0, 2.0, 5.0], "nMiss": 1, "x": -1.128, "y": -1.21}, {"name": "EDVĪNS ŠNORE", "faction": "NA", "status": "ar komentāriem", "answers": [1.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.5, 5.0, 1.0, 4.0], "nMiss": 2, "x": -1.618, "y": 3.438}, {"name": "EDMUNDS TEIRUMNIEKS", "faction": "NA", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.0, 1.0, 1.0, 2.0], "nMiss": 0, "x": -2.867, "y": -1.521}, {"name": "JĀNIS VITENBERGS", "faction": "NA", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.5, 2.0, 1.0, 4.0], "nMiss": 10, "x": -2.474, "y": -0.564}, {"name": "SVETLANA ČULKOVA", "faction": "ST!", "status": "ar komentāriem", "answers": [1.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.0, 1.0, 1.0, 5.0], "nMiss": 0, "x": -1.489, "y": 0.281}, {"name": "NATALJA MARČENKO-JODKO", "faction": "ST!", "status": "pilnībā", "answers": [1.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 4.0, 1.0, 5.0], "nMiss": 0, "x": -2.027, "y": 2.699}, {"name": "AMILS SAĻIMOVS", "faction": "ST!", "status": "pilnībā", "answers": [1.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 1.0, 1.0, 4.0], "nMiss": 0, "x": -1.975, "y": 0.235}, {"name": "IĻJA IVANOVS", "faction": "ST!", "status": "pilnībā", "answers": [1.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 4.0, 1.0, 5.0], "nMiss": 0, "x": -2.027, "y": 2.699}, {"name": "IGORS JUDINS", "faction": "ST!", "status": "pilnībā", "answers": [1.0, 4.0, 1.0, 1.0, 1.0, 5.0, 1.0, 4.0, 1.0, 5.0], "nMiss": 0, "x": -1.659, "y": 2.679}, {"name": "JEFIMIJS KLEMENTJEVS", "faction": "ST!", "status": "pilnībā", "answers": [5.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 1.0, 1.0, 5.0], "nMiss": 0, "x": -3.226, "y": -1.837}, {"name": "DMITRIJS KOVAĻENKO", "faction": "ST!", "status": "pilnībā", "answers": [4.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 4.0, 1.0, 2.0], "nMiss": 0, "x": -3.405, "y": 0.897}, {"name": "VILIS SRUOĢIS", "faction": "ST!", "status": "ar komentāriem", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 4.0, 2.0, 2.0, 2.0, 4.0], "nMiss": 0, "x": -1.807, "y": -0.656}, {"name": "ANDRIS ŠUVAJEVS", "faction": "PRO", "status": "ar komentāriem", "answers": [1.0, 4.0, 4.0, 5.0, 4.0, 5.0, 5.0, 2.0, 5.0, 5.0], "nMiss": 1, "x": 5.362, "y": -0.296}, {"name": "SELMA TEODORA LEVRENCE", "faction": "PRO", "status": "ar komentāriem", "answers": [1.0, 2.0, 5.0, 5.0, 4.0, 5.0, 5.0, 2.0, 5.0, 5.0], "nMiss": 1, "x": 6.403, "y": -0.52}, {"name": "ANTOŅINA ŅENAŠEVA", "faction": "PRO", "status": "ar komentāriem", "answers": [2.0, 1.0, 5.0, 5.0, 4.0, 5.0, 5.0, 1.0, 5.0, 5.0], "nMiss": 0, "x": 6.486, "y": -1.874}, {"name": "KASPARS BRIŠKENS", "faction": "PRO", "status": "ar komentāriem", "answers": [1.0, 4.0, 4.0, 5.0, 4.0, 5.0, 5.0, 1.0, 5.0, 5.0], "nMiss": 1, "x": 5.418, "y": -1.096}, {"name": "EDMUNDS CEPURĪTIS", "faction": "PRO", "status": "ar komentāriem", "answers": [1.0, 1.0, 5.0, 5.0, 4.0, 5.0, 5.0, 1.0, 5.0, 5.0], "nMiss": 6, "x": 6.828, "y": -1.339}, {"name": "LEILA RASIMA", "faction": "PRO", "status": "ar komentāriem", "answers": [1.0, 1.0, 5.0, 5.0, 4.0, 5.0, 5.0, 1.0, 5.0, 5.0], "nMiss": 1, "x": 6.828, "y": -1.339}, {"name": "LĪGA RASNAČA", "faction": "PRO", "status": "ar komentāriem", "answers": [1.0, 1.0, 4.0, 4.0, 4.0, 5.0, 5.0, 1.0, 5.0, 5.0], "nMiss": 1, "x": 6.105, "y": -1.119}, {"name": "JANA SIMANOVSKA", "faction": "PRO", "status": "ar komentāriem", "answers": [1.0, 1.0, 4.0, 5.0, 4.0, 5.0, 5.0, 1.0, 5.0, 5.0], "nMiss": 1, "x": 6.523, "y": -1.154}, {"name": "SKAIDRĪTE ĀBRAMA", "faction": "NEATKARĪGIE", "status": "pilnībā", "answers": [1.0, 1.0, 4.0, 1.0, 1.0, 5.0, 5.0, 5.0, 3.0, 5.0], "nMiss": 0, "x": 2.955, "y": 2.828}, {"name": "OĻEGS BUROVS", "faction": "NEATKARĪGIE", "status": "ar komentāriem", "answers": [4.0, 5.0, 2.0, 1.0, 1.0, 5.0, 3.0, 1.0, 5.0, 5.0], "nMiss": 0, "x": 0.145, "y": -1.866}, {"name": "ANDREJS CEĻAPĪTERS", "faction": "NEATKARĪGIE", "status": "ar komentāriem", "answers": [2.5, 4.0, 1.0, 1.0, 1.0, 5.0, 1.0, 2.0, 1.0, 5.0], "nMiss": 2, "x": -2.059, "y": 0.279}, {"name": "JEKATERINA DREILINGA", "faction": "NEATKARĪGIE", "status": "pilnībā", "answers": [1.0, 4.0, 1.0, 1.0, 1.0, 4.0, 1.0, 1.0, 1.0, 4.0], "nMiss": 0, "x": -1.62, "y": 0.217}, {"name": "ALEKSANDRS KIRŠTEINS", "faction": "NEATKARĪGIE", "status": "pilnībā", "answers": [5.0, 5.0, 1.0, 1.0, 1.0, 5.0, 1.0, 2.0, 1.0, 4.0], "nMiss": 0, "x": -3.4, "y": -1.104}, {"name": "JEĻENA KĻAVIŅA", "faction": "NEATKARĪGIE", "status": "pilnībā", "answers": [1.0, 5.0, 1.0, 1.0, 1.0, 4.0, 1.0, 4.0, 1.0, 5.0], "nMiss": 0, "x": -2.041, "y": 2.701}, {"name": "VIKTORIJA PLEŠKĀNE", "faction": "NEATKARĪGIE", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 1.0, 1.0, 5.0, 2.0, 4.0, 1.0, 5.0], "nMiss": 0, "x": -2.255, "y": 1.126}, {"name": "IGORS RAJEVS", "faction": "NEATKARĪGIE", "status": "pilnībā", "answers": [4.0, 4.0, 1.0, 3.0, 1.0, 2.0, 4.0, 2.0, 2.0, 5.0], "nMiss": 0, "x": -0.022, "y": -0.555}, {"name": "DIDZIS ŠMITS", "faction": "NEATKARĪGIE", "status": "pilnībā", "answers": [1.0, 4.0, 2.0, 4.0, 1.0, 5.0, 1.5, 4.0, 1.0, 5.0], "nMiss": 2, "x": 0.116, "y": 2.415}, {"name": "EDGARS ZELDERIS", "faction": "NEATKARĪGIE", "status": "atteicās", "answers": [2.5, 4.0, 1.0, 1.0, 1.0, 5.0, 1.5, 2.0, 1.0, 5.0], "nMiss": 10, "x": -1.844, "y": 0.304}, {"name": "EDMUNDS JURĒVICS", "faction": "JV", "status": "ar komentāriem", "answers": [1.0, 2.0, 1.0, 2.0, 2.0, 5.0, 4.0, 2.0, 4.0, 5.0], "nMiss": 5, "x": 2.543, "y": 0.664}, {"name": "AGNESE KRASTA", "faction": "JV", "status": "ar komentāriem", "answers": [1.0, 1.0, 2.0, 2.0, 1.0, 5.0, 4.0, 2.0, 2.0, 5.0], "nMiss": 2, "x": 2.038, "y": 0.834}, {"name": "INGA BĒRZIŅA", "faction": "JV", "status": "atteicās", "answers": [1.0, 2.0, 2.0, 3.0, 2.0, 5.0, 4.0, 2.0, 4.0, 5.0], "nMiss": 10, "x": 3.266, "y": 0.444}, {"name": "INGRĪDA CIRCENE", "faction": "JV", "status": "ar komentāriem", "answers": [4.0, 4.0, 1.0, 4.0, 2.0, 5.0, 5.0, 4.0, 2.0, 5.0], "nMiss": 0, "x": 1.001, "y": 0.918}, {"name": "ANDA ČAKŠA", "faction": "JV", "status": "ar komentāriem", "answers": [1.0, 1.0, 2.0, 5.0, 2.0, 5.0, 4.0, 2.0, 4.0, 4.0], "nMiss": 2, "x": 4.354, "y": 0.288}, {"name": "MĀRTIŅŠ DAĢIS", "faction": "JV", "status": "pilnībā", "answers": [4.0, 2.0, 4.0, 5.0, 4.0, 5.0, 3.0, 2.0, 5.0, 5.0], "nMiss": 0, "x": 4.212, "y": -2.04}, {"name": "DĀVIS MĀRTIŅŠ DAUGAVIETIS", "faction": "JV", "status": "pilnībā", "answers": [1.0, 1.0, 1.0, 3.0, 1.0, 5.0, 3.0, 4.0, 2.0, 5.0], "nMiss": 0, "x": 1.609, "y": 2.532}, {"name": "MĀRTIŅŠ FELSS", "faction": "JV", "status": "ar komentāriem", "answers": [2.0, 4.0, 1.0, 1.0, 1.0, 5.0, 3.0, 4.0, 2.0, 5.0], "nMiss": 0, "x": -0.675, "y": 2.126}, {"name": "ALĪNA GENDELE", "faction": "JV", "status": "ar komentāriem", "answers": [4.0, 4.0, 1.0, 1.0, 2.0, 5.0, 2.0, 3.0, 1.0, 4.0], "nMiss": 0, "x": -2.071, "y": 0.126}, {"name": "ANDREJS JUDINS", "faction": "JV", "status": "ar komentāriem", "answers": [1.0, 1.0, 4.0, 1.0, 1.0, 5.0, 5.0, 1.0, 5.0, 5.0], "nMiss": 0, "x": 4.114, "y": -0.609}, {"name": "IRMA KALNIŅA", "faction": "JV", "status": "atteicās", "answers": [1.0, 2.0, 2.0, 3.0, 2.0, 5.0, 4.0, 2.0, 4.0, 5.0], "nMiss": 10, "x": 3.266, "y": 0.444}, {"name": "INESE KALNIŅA", "faction": "JV", "status": "atteicās", "answers": [1.0, 2.0, 2.0, 3.0, 2.0, 5.0, 4.0, 2.0, 4.0, 5.0], "nMiss": 10, "x": 3.266, "y": 0.444}, {"name": "ZANDA KALNIŅA-LUKAŠEVICA", "faction": "JV", "status": "atteicās", "answers": [1.0, 2.0, 2.0, 3.0, 2.0, 5.0, 4.0, 2.0, 4.0, 5.0], "nMiss": 10, "x": 3.266, "y": 0.444}, {"name": "ATIS LABUCIS", "faction": "JV", "status": "ar komentāriem", "answers": [2.0, 2.0, 2.0, 4.0, 2.0, 5.0, 4.0, 2.0, 4.0, 5.0], "nMiss": 0, "x": 3.342, "y": -0.126}, {"name": "AINARS LATKOVSKIS", "faction": "JV", "status": "ar komentāriem", "answers": [4.0, 4.0, 2.0, 2.0, 1.0, 5.0, 4.0, 2.0, 2.0, 5.0], "nMiss": 1, "x": -0.093, "y": -0.711}, {"name": "GATIS LIEPIŅŠ", "faction": "JV", "status": "ar komentāriem", "answers": [1.0, 1.0, 2.0, 5.0, 2.0, 5.0, 5.0, 4.0, 5.0, 5.0], "nMiss": 1, "x": 5.254, "y": 1.884}, {"name": "JĀNIS PATMALNIEKS", "faction": "JV", "status": "ar komentāriem", "answers": [3.0, 3.0, 4.0, 4.0, 4.0, 5.0, 4.0, 1.0, 4.0, 5.0], "nMiss": 0, "x": 3.788, "y": -2.08}, {"name": "ANNA RANCĀNE", "faction": "JV", "status": "pilnībā", "answers": [3.0, 4.0, 2.0, 3.0, 2.0, 5.0, 3.0, 5.0, 2.0, 5.0], "nMiss": 0, "x": 0.313, "y": 2.001}, {"name": "UĢIS ROTBERGS", "faction": "JV", "status": "pilnībā", "answers": [2.0, 2.0, 2.0, 4.0, 2.0, 4.0, 3.0, 2.0, 4.0, 4.0], "nMiss": 0, "x": 2.781, "y": -0.24}, {"name": "JĀNIS SKRASTIŅŠ", "faction": "JV", "status": "pilnībā", "answers": [1.0, 4.0, 1.0, 2.0, 2.0, 5.0, 4.0, 2.0, 2.0, 5.0], "nMiss": 0, "x": 0.874, "y": 0.942}, {"name": "ZANE SKUJIŅA-RUBENE", "faction": "JV", "status": "ar komentāriem", "answers": [1.0, 1.0, 2.0, 5.0, 1.0, 5.0, 5.0, 2.0, 5.0, 5.0], "nMiss": 0, "x": 5.122, "y": 0.42}, {"name": "ILZE VERGINA", "faction": "JV", "status": "ar komentāriem", "answers": [1.0, 1.0, 1.0, 4.0, 2.0, 5.0, 4.0, 3.0, 5.0, 5.0], "nMiss": 2, "x": 4.158, "y": 1.254}, {"name": "AGITA ZARIŅA-STŪRE", "faction": "JV", "status": "pilnībā", "answers": [1.0, 3.0, 1.0, 3.0, 2.0, 5.0, 3.0, 4.0, 2.0, 5.0], "nMiss": 0, "x": 1.118, "y": 2.436}, {"name": "VIESTURS ZARIŅŠ", "faction": "JV", "status": "pilnībā", "answers": [1.0, 4.0, 1.0, 1.0, 1.0, 5.0, 5.0, 5.0, 5.0, 5.0], "nMiss": 0, "x": 1.869, "y": 3.202}, {"name": "JĀNIS ZARIŅŠ", "faction": "JV", "status": "ar komentāriem", "answers": [1.0, 1.0, 4.0, 4.0, 1.0, 5.0, 4.0, 1.0, 4.0, 5.0], "nMiss": 0, "x": 4.473, "y": -0.645}], "factions": [{"name": "AS", "n": 13, "color": "#F9A825", "centroid": [4.0, 4.346, 1.308, 1.462, 1.154, 5.0, 2.154, 1.962, 1.231, 4.5], "x": -1.828, "y": -0.643}, {"name": "JV", "n": 25, "color": "#8E24AA", "centroid": [1.76, 2.32, 1.96, 3.08, 1.84, 4.96, 3.88, 2.6, 3.48, 4.88], "x": 2.527, "y": 0.598}, {"name": "LPV", "n": 8, "color": "#6D4C41", "centroid": [3.75, 4.25, 1.125, 1.125, 1.125, 4.875, 1.5, 2.5, 1.25, 4.0], "x": -2.273, "y": -0.1}, {"name": "NA", "n": 12, "color": "#C62828", "centroid": [4.0, 3.5, 1.0, 1.0, 1.0, 5.0, 1.833, 2.25, 1.333, 3.75], "x": -2.035, "y": -0.413}, {"name": "NEATKARĪGIE", "n": 10, "color": "#607D8B", "centroid": [2.6, 4.0, 1.5, 1.5, 1.0, 4.5, 2.1, 2.7, 1.7, 4.8], "x": -1.003, "y": 0.635}, {"name": "PRO", "n": 8, "color": "#2E7D32", "centroid": [1.125, 1.875, 4.5, 4.875, 4.0, 5.0, 5.0, 1.25, 5.0, 5.0], "x": 6.244, "y": -1.092}, {"name": "ST!", "n": 8, "color": "#1565C0", "centroid": [2.25, 4.625, 1.0, 1.0, 1.0, 4.875, 1.125, 2.625, 1.125, 4.375], "x": -2.202, "y": 0.874}, {"name": "ZZS", "n": 16, "color": "#00897B", "centroid": [4.062, 3.938, 1.438, 1.75, 1.125, 4.75, 2.188, 2.562, 2.062, 4.375], "x": -1.196, "y": -0.34}], "pca": {"mean": [2.92, 3.455, 1.69, 2.07, 1.5, 4.88, 2.64, 2.365, 2.28, 4.505], "pc1": [-0.3422, -0.3683, 0.3045, 0.4185, 0.2452, 0.0141, 0.4298, -0.0566, 0.4663, 0.1172], "pc2": [-0.5345, 0.0195, -0.1848, -0.035, -0.1352, -0.002, 0.0506, 0.7994, -0.1198, 0.0661], "var": [0.5486, 0.1297]}, "stats": {"n": 100, "nFac": 8, "nQ": 10, "pilniba": 52, "komentari": 41, "atteicas": 7, "yesShare": 0.455, "noShare": 0.509, "neuShare": 0.036, "consensusQ": 6, "consensusMaj": 0.99, "divisiveQ": 7, "divisiveMaj": 0.54}};
+const Q=DATA.questions, OPTS=DATA.options, DEPS=DATA.deputies, FACS=DATA.factions, PCA=DATA.pca, ST=DATA.stats;
+const answers=new Array(10).fill(null);
+const cap=s=>s.split(' ').map(w=>w?w[0]+w.slice(1).toLowerCase():w).join(' ');
+const sentence=s=>s.length?s[0]+s.slice(1).toLowerCase():s;
+
+// ---- Aizpildījumu skaitītājs (Firebase Firestore) ----
+// Aizvieto ar savu Firebase projekta konfigurāciju (Project settings > Your apps > Web app).
+// Kamēr projectId ir "AIZVIETO", skaitītājs paliek paslēpts un lapa strādā kā parasti.
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyB652noPOpgiLZgS-Gg765fTBAhf551JPk",
+  authDomain: "integrity-55a50.firebaseapp.com",
+  projectId: "integrity-55a50",
+  storageBucket: "integrity-55a50.firebasestorage.app",
+  messagingSenderId: "356898919825",
+  appId: "1:356898919825:web:02bc13b9bc41007e90f630",
+  measurementId: "G-CEYZNZ6P31"
+};
+let _db=null, _counted=false;
+const counterEl=document.getElementById('counter');
+const fmtN=n=>{try{return Number(n).toLocaleString('lv-LV');}catch(e){return ''+n;}};
+function showCount(n){ if(n==null||isNaN(n)||!counterEl) return; counterEl.textContent='Respondentu skaits: '+fmtN(n); counterEl.hidden=false; }
+function initCounter(){
+  try{
+    if(typeof firebase==='undefined') return;
+    if(!FIREBASE_CONFIG.projectId || FIREBASE_CONFIG.projectId.indexOf('AIZVIETO')===0) return;
+    firebase.initializeApp(FIREBASE_CONFIG);
+    _db=firebase.firestore();
+    _db.collection('counters').doc('aptauja').get().then(d=>{ if(d.exists) showCount(d.data().count); }).catch(()=>{});
+  }catch(e){/* skaitītājs nav pieejams, klusi ignorējam */}
+}
+function bumpCounter(){
+  if(!_db || _counted) return; _counted=true;
+  try{
+    const ref=_db.collection('counters').doc('aptauja');
+    ref.set({count: firebase.firestore.FieldValue.increment(1)}, {merge:true})
+      .then(()=>ref.get()).then(d=>{ if(d.exists) showCount(d.data().count); }).catch(()=>{});
+  }catch(e){}
+}
+initCounter();
+
+// stat strip
+const stats=[['n','deputāti'],['nFac','frakcijas'],['nQ','jautājumi'],['pilniba','atbildēja pilnībā']];
+document.getElementById('stats').innerHTML=stats.map(([k,l])=>
+  `<div class="stat"><div class="v">${ST[k]}</div><div class="k">${l}</div></div>`).join('');
+document.getElementById('statnote').innerHTML=
+  `No 100 deputātiem <b>${ST.pilniba}</b> atbildēja pilnībā, <b>${ST.komentari}</b> ar komentāriem un <b>${ST.atteicas}</b> atteicās. `+
+  `Vislielākā vienprātība bija par ${ST.consensusQ}. jautājumu, vai vientuļā māte ar bērniem ir ģimene, kur teju visi atbildēja apstiprinoši. `+
+  `Visvairāk viedokļi dalījās par ${ST.divisiveQ}. jautājumu, vai Latvijas Televīzijai rādīt raidījumus ar viendzimuma attiecībām.`;
+
+// questions
+const qset=document.getElementById('qset');
+Q.forEach((q,i)=>{
+  const d=document.createElement('div'); d.className='q';
+  d.innerHTML=`<div class="head"><span class="num">${q.n}.</span><span class="txt">${q.text}</span></div>`;
+  const sc=document.createElement('div'); sc.className='scale';
+  OPTS.forEach(o=>{
+    const b=document.createElement('button'); b.type='button'; b.textContent=sentence(o.label);
+    b.setAttribute('aria-pressed','false'); b.setAttribute('aria-label',q.n+'. jautājums: '+sentence(o.label));
+    b.onclick=()=>{answers[i]=o.v;[...sc.children].forEach(c=>c.setAttribute('aria-pressed','false'));
+      b.setAttribute('aria-pressed','true');progress();};
+    sc.appendChild(b);
+  });
+  d.appendChild(sc); qset.appendChild(d);
+});
+function progress(){
+  const n=answers.filter(x=>x!==null).length;
+  document.getElementById('count').textContent=n+' / 10';
+  document.getElementById('track').style.width=(n/10*100)+'%';
+  document.getElementById('calc').disabled=n<10;
+}
+
+// chart geometry
+const svg=document.getElementById('chart'), tip=document.getElementById('tip');
+const W=700,H=500,m={l:44,r:18,t:24,b:48};
+const xs=DEPS.map(d=>d.x).concat(FACS.map(f=>f.x)), ys=DEPS.map(d=>d.y).concat(FACS.map(f=>f.y));
+let xmin=Math.min(...xs),xmax=Math.max(...xs),ymin=Math.min(...ys),ymax=Math.max(...ys);
+const px=(xmax-xmin)*.13,py=(ymax-ymin)*.15; xmin-=px;xmax+=px;ymin-=py;ymax+=py;
+const SX=v=>m.l+(v-xmin)/(xmax-xmin)*(W-m.l-m.r);
+const SY=v=>H-m.b-(v-ymin)/(ymax-ymin)*(H-m.t-m.b);
+const facColor=Object.fromEntries(FACS.map(f=>[f.name,f.color]));
+const E=(t,a)=>{const e=document.createElementNS('http://www.w3.org/2000/svg',t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+const DR=4.2; // deputy dot radius
+// declutter overlapping deputies with a repulsion pass, keeping points near their true position
+(function declutter(){
+  const minD=DR*2+1.8;
+  DEPS.forEach(d=>{d._px=SX(d.x); d._py=SY(d.y);});
+  for(let it=0;it<350;it++){
+    let moved=false;
+    for(let i=0;i<DEPS.length;i++)for(let j=i+1;j<DEPS.length;j++){
+      const a=DEPS[i],b=DEPS[j];
+      let dx=b._px-a._px, dy=b._py-a._py, dist=Math.hypot(dx,dy);
+      if(dist<minD){
+        if(dist<1e-6){const ang=i*2.399;dx=Math.cos(ang);dy=Math.sin(ang);dist=1;}
+        const push=(minD-dist)/2/dist;
+        a._px-=dx*push; a._py-=dy*push; b._px+=dx*push; b._py+=dy*push; moved=true;
+      }
+    }
+    for(const d of DEPS){d._px=Math.max(m.l+DR,Math.min(W-m.r-DR,d._px));d._py=Math.max(m.t+DR,Math.min(H-m.b-DR,d._py));}
+    if(!moved) break;
+  }
+})();
+
+function base(){
+  svg.innerHTML='';
+  const gx=SX(0),gy=SY(0);
+  svg.appendChild(E('line',{x1:m.l,y1:gy,x2:W-m.r,y2:gy,stroke:'var(--grid)','stroke-width':1}));
+  svg.appendChild(E('line',{x1:gx,y1:m.t,x2:gx,y2:H-m.b,stroke:'var(--grid)','stroke-width':1}));
+  let t;
+  t=E('text',{x:m.l,y:H-26,'font-size':11,fill:'var(--faint)'});t.textContent='1. dimensija (PC1, 55%)';svg.appendChild(t);
+  t=E('text',{x:m.l,y:H-11,'font-size':12,fill:'var(--muted)'});t.textContent='konservatīvāk';svg.appendChild(t);
+  t=E('text',{x:W-m.r,y:H-11,'font-size':12,fill:'var(--muted)','text-anchor':'end'});t.textContent='liberālāk';svg.appendChild(t);
+  t=E('text',{x:14,y:H/2,'font-size':11,fill:'var(--faint)','text-anchor':'middle',transform:`rotate(-90 14 ${H/2})`});t.textContent='2. dimensija (PC2, 13%)';svg.appendChild(t);
+  t=E('text',{x:m.l+6,y:m.t+13,'font-size':12,fill:'var(--muted)','paint-order':'stroke',stroke:'var(--plot)','stroke-width':3.5});t.textContent='pieļaujošāk';svg.appendChild(t);
+  t=E('text',{x:m.l+6,y:H-m.b-7,'font-size':12,fill:'var(--muted)','paint-order':'stroke',stroke:'var(--plot)','stroke-width':3.5});t.textContent='atturīgāk';svg.appendChild(t);
+  DEPS.forEach(d=>{
+    const c=E('circle',{cx:d._px,cy:d._py,r:DR,fill:facColor[d.faction],'fill-opacity':.85,stroke:'var(--plot)','stroke-width':.9});
+    c.style.cursor='pointer';
+    c.addEventListener('mouseenter',e=>showTip(e,`${cap(d.name)} · ${d.faction}`));
+    c.addEventListener('mousemove',moveTip); c.addEventListener('mouseleave',hideTip);
+    svg.appendChild(c);
+  });
+  // faction diamonds + non-overlapping labels with leader lines
+  const dpos=FACS.map(f=>({f,cx:SX(f.x),cy:SY(f.y)}));
+  const L=dpos.map(d=>({d,x:d.cx,y:d.cy-16,w:d.f.name.length*6.9+8,h:15}));
+  for(let it=0;it<450;it++){
+    for(const a of L){a.x+=(a.d.cx-a.x)*0.05; a.y+=((a.d.cy-16)-a.y)*0.05;}
+    for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){
+      const a=L[i],b=L[j];
+      const ox=(a.w+b.w)/2+3-Math.abs(a.x-b.x), oy=(a.h+b.h)/2+3-Math.abs(a.y-b.y);
+      if(ox>0&&oy>0){ if(ox<oy){const s=(a.x<=b.x?-1:1)*ox/2;a.x+=s;b.x-=s;} else {const s=(a.y<=b.y?-1:1)*oy/2;a.y+=s;b.y-=s;} }
+    }
+    for(const a of L)for(const d of dpos){
+      const dx=a.x-d.cx, dy=a.y-d.cy, dist=Math.hypot(dx,dy), minr=a.h/2+12;
+      if(dist<minr){const p=(minr-dist)/(dist||1);a.x+=dx*p;a.y+=dy*p;}
+    }
+    for(const a of L){a.x=Math.max(m.l+a.w/2,Math.min(W-m.r-a.w/2,a.x));a.y=Math.max(m.t+9,Math.min(H-m.b-22,a.y));}
+  }
+  L.forEach(a=>svg.appendChild(E('line',{x1:a.d.cx,y1:a.d.cy,x2:a.x,y2:a.y+4,stroke:a.d.f.color,'stroke-width':1,'stroke-opacity':.5})));
+  dpos.forEach(d=>{const s=8.5;svg.appendChild(E('path',{d:`M ${d.cx} ${d.cy-s} L ${d.cx+s} ${d.cy} L ${d.cx} ${d.cy+s} L ${d.cx-s} ${d.cy} Z`,fill:d.f.color,stroke:'var(--plot)','stroke-width':1.8}));});
+  L.forEach(a=>{const t=E('text',{x:a.x,y:a.y+4,'font-size':11.5,'font-weight':600,fill:'var(--ink)','text-anchor':'middle','paint-order':'stroke',stroke:'var(--plot)','stroke-width':3.5});t.textContent=a.d.f.name;svg.appendChild(t);});
+}
+function showTip(e,t){tip.textContent=t;tip.style.opacity=1;moveTip(e);}
+function moveTip(e){const r=svg.getBoundingClientRect(),sx=W/r.width,sy=H/r.height;
+  tip.style.left=((e.clientX-r.left))+'px';tip.style.top=((e.clientY-r.top))+'px';}
+function hideTip(){tip.style.opacity=0;}
+
+// legend
+document.getElementById('legend').innerHTML=FACS.slice().sort((a,b)=>b.x-a.x).map(f=>
+  `<span><i class="dot" style="background:${f.color}"></i>${f.name} <span style="opacity:.6">(${f.n})</span></span>`).join('');
+
+// compute
+const euclid=(a,b)=>{let s=0;for(let i=0;i<10;i++){const d=a[i]-b[i];s+=d*d;}return Math.sqrt(s);};
+document.getElementById('calc').onclick=()=>{
+  const u=answers.slice();
+  let ux=0,uy=0;for(let i=0;i<10;i++){const c=u[i]-PCA.mean[i];ux+=c*PCA.pc1[i];uy+=c*PCA.pc2[i];}
+  base();
+  const cx=SX(ux),cy=SY(uy);
+  svg.appendChild(E('circle',{cx,cy,r:11,fill:'none',stroke:'var(--plot)','stroke-width':4}));
+  svg.appendChild(E('circle',{cx,cy,r:11,fill:'none',stroke:'var(--ink)','stroke-width':2}));
+  svg.appendChild(E('line',{x1:cx-16,y1:cy,x2:cx+16,y2:cy,stroke:'var(--ink)','stroke-width':2}));
+  svg.appendChild(E('line',{x1:cx,y1:cy-16,x2:cx,y2:cy+16,stroke:'var(--ink)','stroke-width':2}));
+  svg.appendChild(E('circle',{cx,cy,r:3,fill:'var(--ink)'}));
+  const lb=E('text',{x:cx+18,y:cy-12,'font-size':13,'font-weight':700,fill:'var(--ink)','paint-order':'stroke',stroke:'var(--plot)','stroke-width':3});
+  lb.textContent='Tu';svg.appendChild(lb);
+  if(!matchMedia('(prefers-reduced-motion:reduce)').matches){
+    const g=E('circle',{cx,cy,r:11,fill:'none',stroke:'var(--ink)','stroke-width':2});svg.appendChild(g);
+    g.animate([{opacity:.6,r:11},{opacity:0,r:34}],{duration:1000,iterations:2});
+  }
+  const fr=FACS.map(f=>({name:f.name,color:f.color,d:euclid(u,f.centroid)})).sort((a,b)=>a.d-b.d);
+  const tf=document.getElementById('topFaction');tf.textContent=fr[0].name;
+  tf.style.background=fr[0].color+'22';tf.style.color=fr[0].color;
+  const dmin=fr[0].d,dmax=fr[fr.length-1].d,rr=document.getElementById('rankRows');rr.innerHTML='';
+  fr.forEach((f,i)=>{const w=dmax>dmin?(1-(f.d-dmin)/(dmax-dmin))*100:100;
+    const row=document.createElement('div');row.className='rrow'+(i===0?' top':'');
+    row.innerHTML=`<div class="fn"><i class="dot" style="background:${f.color}"></i>${f.name}</div>
+      <div class="rbar"><i style="width:${Math.max(5,w)}%;background:${f.color}"></i></div><div class="d">${f.d.toFixed(2)}</div>`;
+    rr.appendChild(row);});
+  const nd=DEPS.map(d=>({name:cap(d.name),faction:d.faction,color:facColor[d.faction],d:euclid(u,d.answers)}))
+    .sort((a,b)=>a.d-b.d).slice(0,5),nr=document.getElementById('nearRows');nr.innerHTML='';
+  nd.forEach(d=>{const row=document.createElement('div');row.className='nrow';
+    row.innerHTML=`<i class="dot" style="background:${d.color}"></i><span class="nm">${d.name}</span>
+      <span class="fx">${d.faction}</span><span class="nd">attālums ${d.d.toFixed(2)}</span>`;nr.appendChild(row);});
+  const out=document.getElementById('out');out.classList.remove('hide');out.classList.add('reveal');
+  document.getElementById('calc').textContent='Pārrēķināt';
+  bumpCounter();
+  out.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});
+};
+</script>
+</body>
+</html>
